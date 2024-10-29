@@ -1,0 +1,257 @@
+Index: app/src/androidTest/java/ipca/examples/topnews/ExampleInstrumentedTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ipca.examples.topnews\r\n\r\nimport androidx.test.platform.app.InstrumentationRegistry\r\nimport androidx.test.ext.junit.runners.AndroidJUnit4\r\n\r\nimport org.junit.Test\r\nimport org.junit.runner.RunWith\r\n\r\nimport org.junit.Assert.*\r\n\r\n/**\r\n * Instrumented test, which will execute on an Android device.\r\n *\r\n * See [testing documentation](http://d.android.com/tools/testing).\r\n */\r\n@RunWith(AndroidJUnit4::class)\r\nclass ExampleInstrumentedTest {\r\n    @Test\r\n    fun useAppContext() {\r\n        // Context of the app under test.\r\n        val appContext = InstrumentationRegistry.getInstrumentation().targetContext\r\n        assertEquals(\"ipca.examples.topnews\", appContext.packageName)\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/androidTest/java/ipca/examples/topnews/ExampleInstrumentedTest.kt b/app/src/androidTest/java/ipca/examples/topnews/ExampleInstrumentedTest.kt
+--- a/app/src/androidTest/java/ipca/examples/topnews/ExampleInstrumentedTest.kt	
++++ b/app/src/androidTest/java/ipca/examples/topnews/ExampleInstrumentedTest.kt	
+@@ -1,24 +1,0 @@
+-package ipca.examples.topnews
+-
+-import androidx.test.platform.app.InstrumentationRegistry
+-import androidx.test.ext.junit.runners.AndroidJUnit4
+-
+-import org.junit.Test
+-import org.junit.runner.RunWith
+-
+-import org.junit.Assert.*
+-
+-/**
+- * Instrumented test, which will execute on an Android device.
+- *
+- * See [testing documentation](http://d.android.com/tools/testing).
+- */
+-@RunWith(AndroidJUnit4::class)
+-class ExampleInstrumentedTest {
+-    @Test
+-    fun useAppContext() {
+-        // Context of the app under test.
+-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+-        assertEquals("ipca.examples.topnews", appContext.packageName)
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/java/ipca/examples/topnews/ui/theme/RowArticle.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ipca.examples.topnews.ui.theme\r\n\r\nimport android.content.Intent\r\nimport android.net.Uri\r\nimport android.util.Log\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.layout.ContentScale\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.style.TextOverflow\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport coil3.compose.AsyncImage\r\nimport coil3.compose.AsyncImage\r\nimport ipca.examples.topnews.R\r\nimport ipca.examples.topnews.Screen\r\nimport ipca.examples.topnews.encodeURL\r\nimport ipca.examples.topnews.models.Article\r\nimport ipca.examples.topnews.toYYYYMMDD\r\nimport ipca.examples.topnews.ui.theme.TopNewsTheme\r\nimport java.util.Date\r\n\r\n\r\n@Composable\r\nfun RowArticle(modifier: Modifier = Modifier,\r\n               article: Article,\r\n               onImageClick : (String)->Unit) {\r\n    val context = LocalContext.current //TBD Make it also open in app\r\n\r\n    Row(modifier = modifier) {\r\n        article.urlToImage?.let {\r\n            AsyncImage(\r\n                model = it,\r\n                contentDescription = \"image article\",\r\n                modifier = Modifier\r\n                    .height(120.dp)\r\n                    .width(120.dp)\r\n                    .clip(RoundedCornerShape(8.dp))\r\n                    .padding(5.dp)\r\n                    .clickable { //TBD Make it also open in App\r\n                        //val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.urlToImage))\r\n                        //context.startActivity(intent)\r\n\r\n                        article.urlToImage?.encodeURL()?.let { it1 -> onImageClick(it1) }\r\n                    },\r\n                contentScale = ContentScale.Crop\r\n            )\r\n        } ?: run {\r\n            Image(\r\n                modifier = Modifier\r\n                    .height(120.dp)\r\n                    .width(120.dp)\r\n                    .clip(RoundedCornerShape(8.dp))\r\n                    .padding(15.dp),\r\n                painter = painterResource(id = R.drawable.ic_launcher_foreground),\r\n                contentDescription = \"image article\",\r\n                contentScale = ContentScale.Crop,\r\n            )\r\n        }\r\n\r\n        Spacer(modifier = Modifier.width(8.dp))\r\n\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(15.dp)) {\r\n            Text(text = article.title?: \"\",\r\n                style = MaterialTheme.typography.titleLarge,\r\n                maxLines = 2,\r\n                overflow = TextOverflow.Ellipsis,)\r\n            Text(text = article.description?: \"\",\r\n                maxLines = 4,\r\n                overflow = TextOverflow.Ellipsis,)\r\n            Text(text = article.publishedAt?.toYYYYMMDD()?:\"\")\r\n        }\r\n    }\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun RowArticlePreview() {\r\n    TopNewsTheme {\r\n        RowArticle(article = Article(\r\n            \"Title\",\r\n            \"description\",\r\n            null,\r\n            \"url\",\r\n            Date()\r\n        )){\r\n\r\n        }\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/ipca/examples/topnews/ui/theme/RowArticle.kt b/app/src/main/java/ipca/examples/topnews/ui/theme/RowArticle.kt
+--- a/app/src/main/java/ipca/examples/topnews/ui/theme/RowArticle.kt	
++++ b/app/src/main/java/ipca/examples/topnews/ui/theme/RowArticle.kt	
+@@ -65,7 +65,7 @@
+                     .height(120.dp)
+                     .width(120.dp)
+                     .clip(RoundedCornerShape(8.dp))
+-                    .padding(15.dp),
++                    .padding(6.dp),
+                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                 contentDescription = "image article",
+                 contentScale = ContentScale.Crop,
+Index: app/src/test/java/ipca/examples/topnews/ExampleUnitTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ipca.examples.topnews\r\n\r\nimport org.junit.Test\r\n\r\nimport org.junit.Assert.*\r\n\r\n/**\r\n * Example local unit test, which will execute on the development machine (host).\r\n *\r\n * See [testing documentation](http://d.android.com/tools/testing).\r\n */\r\nclass ExampleUnitTest {\r\n    @Test\r\n    fun addition_isCorrect() {\r\n        assertEquals(4, 2 + 2)\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/test/java/ipca/examples/topnews/ExampleUnitTest.kt b/app/src/test/java/ipca/examples/topnews/ExampleUnitTest.kt
+--- a/app/src/test/java/ipca/examples/topnews/ExampleUnitTest.kt	
++++ b/app/src/test/java/ipca/examples/topnews/ExampleUnitTest.kt	
+@@ -1,17 +1,0 @@
+-package ipca.examples.topnews
+-
+-import org.junit.Test
+-
+-import org.junit.Assert.*
+-
+-/**
+- * Example local unit test, which will execute on the development machine (host).
+- *
+- * See [testing documentation](http://d.android.com/tools/testing).
+- */
+-class ExampleUnitTest {
+-    @Test
+-    fun addition_isCorrect() {
+-        assertEquals(4, 2 + 2)
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/res/drawable/ic_launcher_background.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"108dp\"\r\n    android:height=\"108dp\"\r\n    android:viewportWidth=\"108\"\r\n    android:viewportHeight=\"108\">\r\n    <path\r\n        android:fillColor=\"#3DDC84\"\r\n        android:pathData=\"M0,0h108v108h-108z\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M9,0L9,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,0L19,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M29,0L29,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M39,0L39,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M49,0L49,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M59,0L59,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M69,0L69,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M79,0L79,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M89,0L89,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M99,0L99,108\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,9L108,9\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,19L108,19\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,29L108,29\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,39L108,39\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,49L108,49\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,59L108,59\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,69L108,69\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,79L108,79\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,89L108,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M0,99L108,99\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,29L89,29\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,39L89,39\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,49L89,49\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,59L89,59\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,69L89,69\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M19,79L89,79\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M29,19L29,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M39,19L39,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M49,19L49,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M59,19L59,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M69,19L69,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n    <path\r\n        android:fillColor=\"#00000000\"\r\n        android:pathData=\"M79,19L79,89\"\r\n        android:strokeWidth=\"0.8\"\r\n        android:strokeColor=\"#33FFFFFF\" />\r\n</vector>\r\n
+===================================================================
+diff --git a/app/src/main/res/drawable/ic_launcher_background.xml b/app/src/main/res/drawable/ic_launcher_background.xml
+--- a/app/src/main/res/drawable/ic_launcher_background.xml	
++++ b/app/src/main/res/drawable/ic_launcher_background.xml	
+@@ -1,170 +1,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="108dp"
+-    android:height="108dp"
+-    android:viewportWidth="108"
+-    android:viewportHeight="108">
+-    <path
+-        android:fillColor="#3DDC84"
+-        android:pathData="M0,0h108v108h-108z" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M9,0L9,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,0L19,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M29,0L29,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M39,0L39,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M49,0L49,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M59,0L59,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M69,0L69,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M79,0L79,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M89,0L89,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M99,0L99,108"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,9L108,9"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,19L108,19"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,29L108,29"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,39L108,39"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,49L108,49"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,59L108,59"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,69L108,69"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,79L108,79"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,89L108,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M0,99L108,99"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,29L89,29"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,39L89,39"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,49L89,49"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,59L89,59"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,69L89,69"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M19,79L89,79"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M29,19L29,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M39,19L39,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M49,19L49,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M59,19L59,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M69,19L69,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-    <path
+-        android:fillColor="#00000000"
+-        android:pathData="M79,19L79,89"
+-        android:strokeWidth="0.8"
+-        android:strokeColor="#33FFFFFF" />
+-</vector>
