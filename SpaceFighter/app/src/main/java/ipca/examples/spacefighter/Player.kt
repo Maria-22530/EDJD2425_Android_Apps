@@ -20,7 +20,7 @@ class Player {
 
     private val GRAVITY = -20
     private val MAX_SPEED = 20
-    private val MIN_SPEED = 1
+    private val MIN_SPEED = -20
 
     var detectCollision : Rect
 
@@ -34,7 +34,7 @@ class Player {
         minY = 0
 
         x = 75
-        y = 50
+        y = height - bitmap.height -50
 
         speed = 1
 
@@ -47,7 +47,7 @@ class Player {
         if (speed > MAX_SPEED) speed = MAX_SPEED
         if (speed < MIN_SPEED) speed = MIN_SPEED
 
-        x += speed - GRAVITY
+      //  x += speed - GRAVITY
 
         if (x < minX) x = minX
         if (x > maxX - 450) x = maxX -450

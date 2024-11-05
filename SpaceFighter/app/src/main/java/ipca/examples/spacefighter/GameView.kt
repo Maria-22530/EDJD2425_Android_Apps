@@ -1,6 +1,8 @@
 package ipca.examples.spacefighter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -25,6 +27,17 @@ class GameView : SurfaceView, Runnable {
     lateinit var player : Player
     lateinit var boom : Boom
 
+    var impactCount = 0
+
+    // Variável para armazenar o número de vidas do jogador
+    var lives = 3
+    lateinit var lifeBitmap: Bitmap
+
+
+    var gameOver = false
+    var score = 0
+
+
     private fun init(context: Context, width: Int, height: Int){
 
         surfaceHolder = holder
@@ -41,6 +54,8 @@ class GameView : SurfaceView, Runnable {
         boom = Boom(context, width, height)
 
 
+        // Imagem que representa uma vida
+        lifeBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.life)
     }
 
     constructor(context: Context?, width: Int, height: Int) : super(context) {
@@ -78,14 +93,18 @@ class GameView : SurfaceView, Runnable {
 
 
     fun update(){
+
+        if (gameOver) return // Não atualizar o jogo se for "Game Over"
+
+        score++ // Aumentar a pontuação a cada atualização
         boom.x = -300
         boom.y = -300
 
         for (s in stars){
-            s.update(player.speed)
+            s.update(30)
         }
         for (e in enemies){
-            e.update(player.speed)
+            e.update(30)
             if (Rect.intersects(player.detectCollision, e.detectCollision)) {
 
 
@@ -93,6 +112,9 @@ class GameView : SurfaceView, Runnable {
                 boom.y = e.y
 
                 e.x = -300
+
+                // Incrementa o contador de impactos e chama a função de impacto
+                impact()
             }
 
         }
@@ -121,8 +143,27 @@ class GameView : SurfaceView, Runnable {
             }
             canvas.drawBitmap(boom.bitmap, boom.x.toFloat(), boom.y.toFloat(), paint)
 
+            // Desenhar as vidas restantes na tela
+            drawLives(canvas)
+
+            // Desenhar a pontuação na tela
+            drawScore(canvas)
+
+            //Texto de "Game Over" se o jogo estiver no estado "Game Over"
+            if (gameOver) {
+                paint.color = Color.RED
+                paint.textSize = width/10f
+                paint.textAlign = Paint.Align.CENTER
+                canvas.drawText("GAME OVER", (width / 2).toFloat(), (height / 2).toFloat(), paint)
+            }
 
             surfaceHolder.unlockCanvasAndPost(canvas)
+        }
+    }
+
+    fun drawLives(canvas: Canvas) {
+        for (i in 0 until lives) {
+            canvas.drawBitmap(lifeBitmap, (10 + i * 50).toFloat(), 10f, paint)
         }
     }
 
@@ -130,18 +171,51 @@ class GameView : SurfaceView, Runnable {
         Thread.sleep(17)
     }
 
+    // Função para desenhar a pontuação na tela
+    fun drawScore(canvas: Canvas) {
+        paint.color = Color.WHITE
+        paint.textSize = 50f
+        canvas.drawText("Score: $score", 50f, 100f, paint)
+    }
+
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+
+        if (gameOver) return true // Ignorar toques se o jogo estiver no estado "Game Over"
+
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
-                player.boosting = true
+               // player.boosting = true
+                player.x = event.x.toInt()
             }
             MotionEvent.ACTION_UP -> {
-                player.boosting = false
+               // player.boosting = false
+            }
+            MotionEvent.ACTION_MOVE -> {
+                player.x = event.x.toInt()
             }
         }
         return true
     }
+
+    fun impact(){
+
+        impactCount++
+        if (impactCount >= 3) {
+            // Reduz o número de vidas e reseta o contador de impactos
+            lives--
+            impactCount = 0
+
+            if (lives <= 0){
+
+                //Jogador morre após perder todas as vidas
+                playing = false
+                gameOver = true
+            }
+        }
+    }
+
+
 
 }
 

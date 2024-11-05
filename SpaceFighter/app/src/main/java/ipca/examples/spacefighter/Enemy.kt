@@ -18,7 +18,7 @@ class Enemy {
     var minY = 0
 
     var bitmap : Bitmap
-    var boosting = false
+   // var boosting = false
 
     val generator = Random()
 
@@ -31,10 +31,10 @@ class Enemy {
         maxX = width
 
         maxY = height - bitmap.height
-        minY = 0
+        minY = -500
 
         x = generator.nextInt(maxX)
-        y = generator.nextInt(maxY)
+        y = -500
 
         speed = generator.nextInt(6) + 10
 
@@ -42,11 +42,11 @@ class Enemy {
     }
 
     fun update(playerSpeed: Int) {
-        y -= playerSpeed
-        y -= speed
+        y += playerSpeed
+        y += speed
 
-        if (y < minY - bitmap.width){
-            y = maxY
+        if (y > maxY + bitmap.height){
+            y = minY
             x = generator.nextInt(maxX)
             speed = generator.nextInt(6) + 10
         }
