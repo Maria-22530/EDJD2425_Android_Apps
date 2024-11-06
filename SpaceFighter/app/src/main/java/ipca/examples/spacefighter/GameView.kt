@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 
 
 class GameView : SurfaceView, Runnable {
@@ -37,6 +39,8 @@ class GameView : SurfaceView, Runnable {
     var gameOver = false
     var score = 0
 
+    // Adiciona uma variável para o bitmap de fundo redimensionado
+    lateinit var backgroundBitmap: Bitmap
 
     private fun init(context: Context, width: Int, height: Int){
 
@@ -56,6 +60,11 @@ class GameView : SurfaceView, Runnable {
 
         // Imagem que representa uma vida
         lifeBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.life)
+
+        // Carregar e redimensionar a imagem de fundo para caber na tela
+        val originalBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.bg)
+        backgroundBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
+
     }
 
     constructor(context: Context?, width: Int, height: Int) : super(context) {
@@ -122,12 +131,23 @@ class GameView : SurfaceView, Runnable {
     }
 
     fun draw(){
+
+        val backgroundBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.bg)
+
+        val screenWidth: Int = width
+        val screenHeight: Int = height
+
         if (surfaceHolder.surface.isValid){
             canvas = surfaceHolder.lockCanvas()
 
-            // design code here
-
             canvas.drawColor(Color.BLACK)
+
+            // Definir o Rect de destino para cobrir toda a tela
+
+            val destRect = Rect(0, 0, screenWidth, screenHeight)
+
+            // Desenhar a imagem de fundo escalada
+            canvas.drawBitmap(backgroundBitmap, null, destRect, paint)
 
             paint.color = Color.WHITE
             for (star in stars) {
@@ -162,8 +182,15 @@ class GameView : SurfaceView, Runnable {
     }
 
     fun drawLives(canvas: Canvas) {
+        val paddingRight = 120f // Ajuste o valor conforme necessário
+        val paddingBottom = 90f  // Ajuste o valor conforme necessário
+
+        val x = canvas.width - paint.measureText("Score: $score") - paddingRight
+        val y = paddingBottom
+
         for (i in 0 until lives) {
-            canvas.drawBitmap(lifeBitmap, (10 + i * 50).toFloat(), 10f, paint)
+            canvas.drawBitmap(lifeBitmap, (paddingRight + i * 80).toFloat(), paddingBottom, paint)
+
         }
     }
 
@@ -173,9 +200,15 @@ class GameView : SurfaceView, Runnable {
 
     // Função para desenhar a pontuação na tela
     fun drawScore(canvas: Canvas) {
+        val paddingRight = 120f // Ajuste o valor conforme necessário
+        val paddingBottom = 150f  // Ajuste o valor conforme necessário
+
+        val x = canvas.width - paint.measureText("Score: $score") - paddingRight
+        val y = paddingBottom
+
         paint.color = Color.WHITE
-        paint.textSize = 50f
-        canvas.drawText("Score: $score", 50f, 100f, paint)
+        paint.textSize = 90f
+        canvas.drawText("Score: $score", x, y, paint)
     }
 
 
